@@ -1,6 +1,5 @@
 #include<Stepper.h>
 
-
 class Event
 {
 	public:
@@ -14,8 +13,6 @@ class Event
       this->func();
     }
 
-   
-
 	private:
 		void (*func)();
 };
@@ -24,42 +21,33 @@ class Event
 class Motor
 {
   public:
-    Motor(int pin1, int pin2)
+    Motor(int pin1)
     {
       this->pin1 = pin1;
-      this->pin2 = pin2;
       pinMode(pin1, OUTPUT);
-      pinMode(pin2, OUTPUT);
     }
 
     void fwd()
     {
       digitalWrite(pin1, HIGH);
-      digitalWrite(pin2, LOW);
-    }
-
-    void bck()
-    {
-      digitalWrite(pin1, LOW);
-      digitalWrite(pin2, HIGH);  
     }
 
     void stp()
     {
       digitalWrite(pin1, LOW);
-      digitalWrite(pin2, LOW);
     }
   
   private:
     int pin1;
-    int pin2;
 };
+
 
 class FotoSenzor
 {
 	public:
 		FotoSenzor(int dayNight, int pin)
 		{
+      pinMode(A0, INPUT);
       this->pin = pin;
 			this->dayNight = dayNight;
 		}
@@ -71,17 +59,17 @@ class FotoSenzor
 
    bool isNight()
    {
-    return analogRead(this->pin) <= dayNight;
+    return analogRead(this->pin) >= dayNight;
    }
 
    bool isDay()
    {
-    return analogRead(this->pin) >= dayNight;
+    return analogRead(this->pin) <= dayNight;
    }
 
-   char value()
+   int value()
     {
-      return analogRead(this->pin); 
+      return (analogRead(A0)); 
     }
 
    Event event;
@@ -92,31 +80,38 @@ class FotoSenzor
 };
 
 
-int s1StepsPerRevolution;
+int s1StepsPerRevolution=2048;  
 int stepCounter = 0;
-int s1p1, s1p2, s1p3, s1p4;
-int s1pin = 123;
+int s1p1=8, s1p2=9, s1p3=10, s1p4=11;
+int s1pin = A0;
 Stepper s1Stepper(s1StepsPerRevolution, s1p1, s1p2, s1p3, s1p4);
-FotoSenzor s1(120, s1pin);
+FotoSenzor s1(350, s1pin);
 void s1Func()
 {
+  Serial.println(s1.value());
   if(s1.isDay() && stepCounter != 1)
   {
-    s1Stepper.setSpeed(50);
+    Serial.print("UPALI SUNCOBRAN");
+    Serial.print(s1.value());
+    Serial.println();
+    s1Stepper.setSpeed(20);
     s1Stepper.step(s1StepsPerRevolution);
     stepCounter = 1;
   }
   else if(s1.isNight() && stepCounter != -1)
   {
-    s1Stepper.setSpeed(50);
+    Serial.print("UGASI SUNCOBRAN");
+    Serial.print(s1.value());
+    Serial.println();
+    s1Stepper.setSpeed(10);
     s1Stepper.step(-s1StepsPerRevolution);
     stepCounter = -1;
   }
 }
 
 
-int m1p1, m1p2;
-Motor motor(m1p1, m1p2);
+int m1p1;
+Motor motor(m1p1);
 int temperature = 15;
 Event tempEvent;
 int ledpin;
@@ -146,7 +141,7 @@ void s2Func()
   if(s2.value() > s3.value())
   {
     s1Stepper.setSpeed(50);
-    s1Stepper.step(s2s3StepsPerRevolution);
+    s1Stepper.step(s2s3StepsPerRevolution/2);
   }
 }
 
@@ -154,12 +149,13 @@ void s3Func(){
   if(s3.value() > s2.value())
   {
     s1Stepper.setSpeed(50);
-    s1Stepper.step(s2s3StepsPerRevolution);
+    s1Stepper.step(-(s2s3StepsPerRevolution/2));
   }  
 }
 
 void setup()
 {
+  Serial.begin(9600);
   pinMode(ledpin, OUTPUT);
   s1.setEvent(s1Func);
   s2.setEvent(s2Func);
@@ -169,7 +165,5 @@ void setup()
 void loop()
 {
   s1.event.call();
-  tempEvent.call();
-  s2.event.call();
-  s3.event.call();
+
 }
