@@ -83,12 +83,12 @@ class FotoSenzor
 //#############################
 //PALJENJE I GAŠENJE SUNCOBRANA
 //#############################
-int s1StepsPerRevolution=2048;  
-int stepCounter = 0;
-int s1p1=8, s1p2=9, s1p3=10, s1p4=11;
-int s1pin = A0;
-Stepper s1Stepper(s1StepsPerRevolution, s1p1, s1p2, s1p3, s1p4);
-FotoSenzor s1(350, s1pin);
+int s1StepsPerRevolution=2048; //BROJ TAKTOVA PO REVOLUCIJI MOTORA
+int stepCounter = 0;  //OVO NE DIRAJ
+int s1p1=8, s1p2=9, s1p3=10, s1p4=11; //PINOVI STEP MOTORA
+int s1pin = A0; //PIN FOTOOTPORNIKA
+Stepper s1Stepper(s1StepsPerRevolution, s1p1, s1p2, s1p3, s1p4); //STEPPER MOTOR
+FotoSenzor s1(350, s1pin);  //OVO NE DIRAJ
 void s1Func()
 {
   Serial.println(s1.value());
@@ -116,12 +116,12 @@ void s1Func()
 //###########
 //TEMPERATURA
 //###########
-int dhtpin;
-DHT dht(dhtpin, "DHT11");
-int m1p1;
-int ledpin;
-Motor motor(m1p1);
-Event tempEvent;
+int dhtpin; //PIN DHT SENZORA
+DHT dht(dhtpin, "DHT11"); //NE DIRAJ
+int m1p1; //PIN DC MOTORA
+int ledpin; //PIN LEDICE
+Motor motor(m1p1);  //NE DIRAJ
+Event tempEvent; //NE DIRAJ
 void onHighTemp()
 {
   float temperature = dht.readTemperature();
@@ -142,12 +142,12 @@ void onHighTemp()
 //#####################
 //OKRETANJE PREMA SUNCU
 //#####################
-int s2s3StepsPerRevolution;
-int s2pin, s3pin;
-int s2p1, s2p2, s2p3, s2p4;
-FotoSenzor s2(120, s2pin);
-FotoSenzor s3(120, s3pin);
-Stepper s2s3Stepper(s2s3StepsPerRevolution, s2p1, s2p2, s2p3, s2p4);
+int s2s3StepsPerRevolution; //BROJ TAKTOVA PO REVOLUCIJI STEPER motORA
+int s2pin, s3pin;  //PINOVI PRVOG I DRUGOG FOTOOTPORNIKA
+int s2p1, s2p2, s2p3, s2p4; //PINOVI STEPPER MOTORA
+FotoSenzor s2(350, s2pin);  //NE DIRAJ
+FotoSenzor s3(350, s3pin);  //NE DIRAJ
+Stepper s2s3Stepper(s2s3StepsPerRevolution, s2p1, s2p2, s2p3, s2p4); //NE DIRAJ
 void s2Func()
 {
   if(s2.value() > s3.value())
@@ -179,6 +179,6 @@ void loop()
   s1.event.call();  //PALJENJE I GAŠENJE SUNCOBRANA
   tempEvent.call(); //VENTILATOR
   s2.event.call();  //OKRETANJE PREMA SUNCU
-  s3.event.call();  //OKRETANJE PREMA SUNCU
+    s3.event.call();  //OKRETANJE PREMA SUNCU
 
 }
