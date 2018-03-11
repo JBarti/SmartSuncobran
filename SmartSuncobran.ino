@@ -1,3 +1,4 @@
+#include <DHT.h>
 #include<Stepper.h>
 
 class Event
@@ -115,13 +116,15 @@ void s1Func()
 //###########
 //TEMPERATURA
 //###########
+int dhtpin;
+DHT dht(dhtpin, "DHT11");
 int m1p1;
-Motor motor(m1p1);
-int temperature = 15;
-Event tempEvent;
 int ledpin;
+Motor motor(m1p1);
+Event tempEvent;
 void onHighTemp()
 {
+  float temperature = dht.readTemperature();
   if(temperature >= 27)
   {
     motor.fwd();
@@ -163,7 +166,7 @@ void s3Func(){
 }
 
 void setup()
-{
+{ 
   Serial.begin(9600);
   pinMode(ledpin, OUTPUT);
   s1.setEvent(s1Func);
