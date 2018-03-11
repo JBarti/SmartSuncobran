@@ -79,7 +79,9 @@ class FotoSenzor
 		int dayNight;
 };
 
-
+//#############################
+//PALJENJE I GAŠENJE SUNCOBRANA
+//#############################
 int s1StepsPerRevolution=2048;  
 int stepCounter = 0;
 int s1p1=8, s1p2=9, s1p3=10, s1p4=11;
@@ -110,6 +112,9 @@ void s1Func()
 }
 
 
+//###########
+//TEMPERATURA
+//###########
 int m1p1;
 Motor motor(m1p1);
 int temperature = 15;
@@ -130,6 +135,10 @@ void onHighTemp()
 }
 
 
+
+//#####################
+//OKRETANJE PREMA SUNCU
+//#####################
 int s2s3StepsPerRevolution;
 int s2pin, s3pin;
 int s2p1, s2p2, s2p3, s2p4;
@@ -164,6 +173,9 @@ void setup()
 
 void loop()
 {
-  s1.event.call();
+  s1.event.call();  //PALJENJE I GAŠENJE SUNCOBRANA
+  tempEvent.call(); //VENTILATOR
+  s2.event.call();  //OKRETANJE PREMA SUNCU
+  s3.event.call();  //OKRETANJE PREMA SUNCU
 
 }
